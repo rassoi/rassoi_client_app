@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "557519141026",
+    "project_id": "rassoi-767af",
+    "storage_bucket": "rassoi-767af.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:557519141026:android:9ce74fa897cae415453ffb",
+        "android_client_info": {
+          "package_name": "com.example.recipe_entry"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "557519141026-bi255ehhirtva2psjhe3oj8poacbbgkh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDkxFcbgyoggF7XMJYL--aTa8Y9rU0LG3g"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "557519141026-bi255ehhirtva2psjhe3oj8poacbbgkh.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "557519141026-sajqjc0gtv9nsa2k6pn1c2dfa06nq3u3.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.example.recipeEntry"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
