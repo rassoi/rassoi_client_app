@@ -113,9 +113,9 @@ class _MyHomePageState extends State<MyHomePage> {
     }
     // Upload meal
     var dishNameLowerCase = mealNameEditingController.text.toLowerCase();
-    var dishArrayName = [];
+    List<String> dishArrayName = [];
     for (int i = 0; i < dishNameLowerCase.length; i++) {
-      dishArrayName[i] = dishNameLowerCase.substring(0, i + 1);
+      dishArrayName.add(dishNameLowerCase.substring(0, i + 1));
     }
     FirebaseStorage _storage = FirebaseStorage.instance;
     int random = Random().nextInt(100000) + 1001;
@@ -137,6 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         "name": mealNameEditingController.text,
                         "nameAsArray": dishArrayName,
                         "youtube_link": youTubeLinkEditingController.text,
+                        "categoryName": suggestionsState.categoriesSelectedList
                       })))).then((value) => "completed 2");
     } on Exception {
     return Future.error("get lost 2");
@@ -172,6 +173,7 @@ class _MyHomePageState extends State<MyHomePage> {
       showIndicator = false;
       if (dataSubmitted) {
         // reset all data
+        suggestionState.removeAllSelectedCategories();
         suggestionState.init();
         uniqueMealNameEditingController.text = "";
         mealNameDescriptionEditingController.text = "";
@@ -293,7 +295,6 @@ class _MyHomePageState extends State<MyHomePage> {
                                 ),
                                 controller: uniqueMealNameEditingController,
                               ),
-                              //  onSuggestionSelected: onSuggestionSelected,
                               itemBuilder:
                                   (BuildContext context, String itemData) {
                                 return Padding(
@@ -361,6 +362,41 @@ class _MyHomePageState extends State<MyHomePage> {
                             },
                             controller: youTubeLinkEditingController,
                           ),
+                        ),
+                        Consumer<SuggestionsState>(
+                            builder: (context, categoryState, _) {
+                              return Wrap(
+                                children: getSelectedCategoryButtons(categoryState),
+                              );
+                            }),
+                        Padding(
+                          padding: const EdgeInsets.only(top: 12.0),
+                          child: Consumer<SuggestionsState>(
+                              builder: (context, categoryState, _) {
+                                return TypeAheadFormField(
+                                  textFieldConfiguration: const TextFieldConfiguration(
+                                    decoration: InputDecoration(
+                                      labelText: "Add Category",
+                                      border: OutlineInputBorder(),
+                                    ),
+                                  ),
+                                  //  onSuggestionSelected: onSuggestionSelected,
+                                  itemBuilder:
+                                      (BuildContext context, String itemData) {
+                                    return Padding(
+                                      padding: const EdgeInsets.all(8.0),
+                                      child: Text(itemData),
+                                    );
+                                  },
+                                  suggestionsCallback: (pattern) {
+                                    return categoryState.getCategorySuggestion(pattern);
+                                  },
+                                  onSuggestionSelected: (suggestion) {
+                                    categoryState.setSelectedCategory(suggestion);
+                                    setState(() {});
+                                  },
+                                );
+                              }),
                         ),
                         if (_recipeImage != null)
                           Padding(
@@ -610,6 +646,32 @@ class _MyHomePageState extends State<MyHomePage> {
       ]);
     });
     _showSnackBar(context, "New ingredient list added.");
+  }
+
+  List<Widget> getSelectedCategoryButtons(SuggestionsState categoryState) {
+    List<Widget> selectedCategoryButtons = [];
+    for (String selectedCategory in categoryState.categoriesSelectedList) {
+      selectedCategoryButtons.add(Container(
+        height: 52,
+        padding: const EdgeInsets.fromLTRB(0, 10, 10, 5),
+        child: TextButton.icon(
+            style: ButtonStyle(
+                shape: MaterialStateProperty.all<RoundedRectangleBorder>(
+                    RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(18.0),
+                        side: const BorderSide(color: Colors.red)
+                    )
+                ),
+            ),
+            onPressed: () {
+              categoryState.removeSelectedCategory(selectedCategory);
+              setState(() {});
+            },
+            icon: const Center(child: Icon(Icons.cancel_outlined)),
+            label: Text(selectedCategory)),
+      ));
+    }
+    return selectedCategoryButtons;
   }
 }
 

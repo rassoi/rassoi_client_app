@@ -11,6 +11,8 @@ class SuggestionsState extends ChangeNotifier {
   List<String> allIngredientsNames = [];
   FutureOr<Iterable<String>> mealNamesFuture = List.empty();
   FutureOr<Iterable<String>> ingredientsNamesFuture = List.empty();
+  List<String> categoriesSelectedList = [];
+  final List<String> _allCategoriesList = [];
 
   SuggestionsState() {
     init();
@@ -45,6 +47,15 @@ class SuggestionsState extends ChangeNotifier {
       allIngredientsNames.sort((a, b) =>
           a.toUpperCase().toString().compareTo(b.toUpperCase().toString()));
       return ingredientsNames;
+    });
+
+    FirebaseFirestore.instance
+        .collection("categories")
+        .get()
+        .then((querySnapshot) {
+      for (var queryDocumentSnapshot in querySnapshot.docs) {
+        _allCategoriesList.add(queryDocumentSnapshot.get("categoryName").toString());
+      }
     });
   }
 
@@ -94,5 +105,30 @@ class SuggestionsState extends ChangeNotifier {
       }
       return list;
     }
+  }
+
+  FutureOr<Iterable<String>> getCategorySuggestion(String? queryCategoryName) {
+    List<String> categoriesSuggestionList = [];
+    categoriesSuggestionList.addAll(_allCategoriesList);
+    for (int index = 0; index < categoriesSelectedList.length; index++) {
+        categoriesSuggestionList.remove(categoriesSelectedList.elementAt(index));
+    }
+    return categoriesSuggestionList;
+    }
+
+  void setSelectedCategory(Object? selectedCategoryName) {
+    if (selectedCategoryName != null && selectedCategoryName is String) {
+      categoriesSelectedList.add(selectedCategoryName);
+    }
+  }
+
+  void removeSelectedCategory(String? selectedCategoryName) {
+    if (selectedCategoryName != null) {
+      categoriesSelectedList.remove(selectedCategoryName);
+    }
+  }
+
+  void removeAllSelectedCategories() {
+    categoriesSelectedList = [];
   }
 }
